@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function DashboardLayout({ children }) {
     const router = useRouter();
@@ -39,148 +40,254 @@ export default function DashboardLayout({ children }) {
 
     if (!user) {
         return (
-            <div className="min-h-screen bg-[var(--bg-dark)] flex items-center justify-center">
-                <div className="animate-spin h-8 w-8 border-4 border-[var(--primary-purple)] border-t-transparent rounded-full"></div>
+            <div style={{
+                minHeight: "100vh",
+                backgroundColor: "var(--bg-primary)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+            }}>
+                <div className="spinner"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[var(--bg-dark)]">
+        <div style={{ minHeight: "100vh", backgroundColor: "var(--bg-primary)" }}>
             {/* Mobile Header */}
-            <header className="lg:hidden fixed top-0 left-0 right-0 z-50 glass-card border-b border-[var(--glass-border)]">
-                <div className="flex items-center justify-between h-16 px-4">
+            <header style={{
+                display: "block",
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                zIndex: 50,
+                backgroundColor: "var(--bg-card)",
+                borderBottom: "1px solid var(--border-color)",
+                height: "64px"
+            }} className="lg-hide">
+                <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    height: "100%",
+                    padding: "0 1rem"
+                }}>
                     <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        className="p-2 rounded-lg hover:bg-[var(--bg-card)] transition-colors"
+                        style={{
+                            padding: "0.5rem",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            color: "var(--text-primary)"
+                        }}
                     >
-                        <svg
-                            className="w-6 h-6 text-white"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M4 6h16M4 12h16M4 18h16"
-                            />
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <line x1="3" y1="6" x2="21" y2="6" />
+                            <line x1="3" y1="12" x2="21" y2="12" />
+                            <line x1="3" y1="18" x2="21" y2="18" />
                         </svg>
                     </button>
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full gradient-button flex items-center justify-center">
-                            <span className="text-sm">📔</span>
+
+                    <Link href="/feed" style={{ display: "flex", alignItems: "center", gap: "0.5rem", textDecoration: "none" }}>
+                        <div style={{
+                            width: "32px",
+                            height: "32px",
+                            borderRadius: "50%",
+                            backgroundColor: "var(--primary)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "0.875rem"
+                        }}>
+                            📔
                         </div>
-                        <span className="font-bold text-white">Yaşam Günlüğü</span>
-                    </div>
-                    <div className="w-8 h-8 rounded-full bg-[var(--primary-purple)] flex items-center justify-center text-white font-medium">
-                        {user.full_name?.charAt(0) || user.username?.charAt(0) || "U"}
-                    </div>
+                        <span style={{ fontWeight: "bold", color: "var(--text-primary)" }}>Yaşam Günlüğü</span>
+                    </Link>
+
+                    <ThemeToggle />
                 </div>
             </header>
 
             {/* Sidebar */}
-            <aside
-                className={`fixed top-0 left-0 h-full w-64 bg-[var(--bg-card)] border-r border-[var(--glass-border)] z-40 transform transition-transform duration-300 lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-                    }`}
-            >
-                <div className="flex flex-col h-full">
-                    {/* Logo */}
-                    <div className="p-6 border-b border-[var(--glass-border)]">
-                        <Link href="/feed" className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full gradient-button flex items-center justify-center">
-                                <span className="text-xl">📔</span>
-                            </div>
-                            <span className="text-xl font-bold text-white">Yaşam Günlüğü</span>
-                        </Link>
-                    </div>
+            <aside style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                height: "100vh",
+                width: "256px",
+                backgroundColor: "var(--bg-card)",
+                borderRight: "1px solid var(--border-color)",
+                zIndex: 40,
+                display: "flex",
+                flexDirection: "column",
+                transform: isSidebarOpen ? "translateX(0)" : "translateX(-100%)",
+                transition: "transform 0.3s ease"
+            }} className="sidebar-lg-visible">
+                {/* Logo */}
+                <div style={{ padding: "1.5rem", borderBottom: "1px solid var(--border-color)" }}>
+                    <Link href="/feed" style={{ display: "flex", alignItems: "center", gap: "0.75rem", textDecoration: "none" }}>
+                        <div style={{
+                            width: "40px",
+                            height: "40px",
+                            borderRadius: "50%",
+                            backgroundColor: "var(--primary)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "1.25rem"
+                        }}>
+                            📔
+                        </div>
+                        <span style={{ fontSize: "1.25rem", fontWeight: "bold", color: "var(--text-primary)" }}>
+                            Yaşam Günlüğü
+                        </span>
+                    </Link>
+                </div>
 
-                    {/* Navigation */}
-                    <nav className="flex-1 p-4">
-                        <ul className="space-y-2">
-                            {navItems.map((item) => {
-                                const isActive = pathname === item.href;
-                                return (
-                                    <li key={item.href}>
-                                        <Link
-                                            href={item.href}
-                                            onClick={() => setIsSidebarOpen(false)}
-                                            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isActive
-                                                    ? "gradient-button text-white"
-                                                    : "text-[var(--text-secondary)] hover:bg-[var(--bg-card-hover)] hover:text-white"
-                                                }`}
-                                        >
-                                            <span className="text-xl">{item.icon}</span>
-                                            <span className="font-medium">{item.label}</span>
-                                        </Link>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </nav>
+                {/* Navigation */}
+                <nav style={{ flex: 1, padding: "1rem" }}>
+                    <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                        {navItems.map((item) => {
+                            const isActive = pathname === item.href;
+                            return (
+                                <li key={item.href}>
+                                    <Link
+                                        href={item.href}
+                                        onClick={() => setIsSidebarOpen(false)}
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "0.75rem",
+                                            padding: "0.75rem 1rem",
+                                            borderRadius: "0.75rem",
+                                            textDecoration: "none",
+                                            backgroundColor: isActive ? "var(--primary)" : "transparent",
+                                            color: isActive ? "var(--bg-primary)" : "var(--text-secondary)",
+                                            fontWeight: "500",
+                                            transition: "all 0.2s ease"
+                                        }}
+                                    >
+                                        <span style={{ fontSize: "1.25rem" }}>{item.icon}</span>
+                                        <span>{item.label}</span>
+                                    </Link>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </nav>
 
-                    {/* New Entry Button */}
-                    <div className="p-4 border-t border-[var(--glass-border)]">
-                        <Link
-                            href="/new"
-                            className="flex items-center justify-center gap-2 w-full gradient-button py-3 rounded-xl text-white font-semibold"
-                        >
-                            <span className="text-xl">+</span>
-                            <span>Yeni Kayıt</span>
-                        </Link>
-                    </div>
+                {/* New Entry Button */}
+                <div style={{ padding: "1rem", borderTop: "1px solid var(--border-color)" }}>
+                    <Link
+                        href="/new"
+                        className="btn-primary"
+                        style={{ width: "100%", justifyContent: "center" }}
+                    >
+                        <span style={{ fontSize: "1.25rem" }}>+</span>
+                        <span>Yeni Kayıt</span>
+                    </Link>
+                </div>
 
-                    {/* User Profile */}
-                    <div className="p-4 border-t border-[var(--glass-border)]">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 rounded-full bg-[var(--primary-purple)] flex items-center justify-center text-white font-medium">
+                {/* User Profile & Theme */}
+                <div style={{ padding: "1rem", borderTop: "1px solid var(--border-color)" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                            <div style={{
+                                width: "40px",
+                                height: "40px",
+                                borderRadius: "50%",
+                                backgroundColor: "var(--primary)",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                color: "var(--bg-primary)",
+                                fontWeight: "500"
+                            }}>
                                 {user.full_name?.charAt(0) || user.username?.charAt(0) || "U"}
                             </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-white font-medium truncate">
+                            <div style={{ minWidth: 0 }}>
+                                <p style={{
+                                    fontWeight: "500",
+                                    color: "var(--text-primary)",
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    margin: 0
+                                }}>
                                     {user.full_name || user.username}
                                 </p>
-                                <p className="text-[var(--text-muted)] text-sm truncate">
+                                <p style={{
+                                    fontSize: "0.875rem",
+                                    color: "var(--text-muted)",
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    margin: 0
+                                }}>
                                     {user.email}
                                 </p>
                             </div>
                         </div>
-                        <button
-                            onClick={handleLogout}
-                            className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-[var(--bg-dark)] text-[var(--text-secondary)] hover:text-white hover:bg-red-500/20 transition-colors"
-                        >
-                            <svg
-                                className="w-5 h-5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                                />
-                            </svg>
-                            <span>Çıkış Yap</span>
-                        </button>
+                        <ThemeToggle />
                     </div>
+
+                    <button
+                        onClick={handleLogout}
+                        style={{
+                            width: "100%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: "0.5rem",
+                            padding: "0.5rem",
+                            borderRadius: "0.5rem",
+                            backgroundColor: "var(--bg-secondary)",
+                            border: "none",
+                            color: "var(--text-secondary)",
+                            cursor: "pointer",
+                            transition: "all 0.2s ease"
+                        }}
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                            <polyline points="16 17 21 12 16 7" />
+                            <line x1="21" y1="12" x2="9" y2="12" />
+                        </svg>
+                        <span>Çıkış Yap</span>
+                    </button>
                 </div>
             </aside>
 
             {/* Overlay for mobile */}
             {isSidebarOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+                    style={{
+                        position: "fixed",
+                        inset: 0,
+                        backgroundColor: "rgba(0, 0, 0, 0.5)",
+                        zIndex: 30
+                    }}
                     onClick={() => setIsSidebarOpen(false)}
                 />
             )}
 
             {/* Main Content */}
-            <main className="lg:ml-64 min-h-screen pt-16 lg:pt-0">
-                <div className="p-4 lg:p-8">{children}</div>
+            <main className="main-content">
+                <div style={{ padding: "1.5rem" }}>{children}</div>
             </main>
+
+            <style jsx>{`
+        @media (min-width: 1024px) {
+          .lg-hide {
+            display: none !important;
+          }
+          .sidebar-lg-visible {
+            transform: translateX(0) !important;
+          }
+        }
+      `}</style>
         </div>
     );
 }

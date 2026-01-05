@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 const moods = [
@@ -18,10 +18,11 @@ const moods = [
 export default function NewEntryPage() {
     const router = useRouter();
     const videoRef = useRef(null);
+    const previewRef = useRef(null);
     const mediaRecorderRef = useRef(null);
     const chunksRef = useRef([]);
 
-    const [step, setStep] = useState(1); // 1: Record, 2: Review, 3: Details
+    const [step, setStep] = useState(1);
     const [stream, setStream] = useState(null);
     const [isRecording, setIsRecording] = useState(false);
     const [recordedBlob, setRecordedBlob] = useState(null);
@@ -38,7 +39,6 @@ export default function NewEntryPage() {
         isPrivate: true,
     });
 
-    // Start camera
     const startCamera = async () => {
         try {
             const mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -55,13 +55,12 @@ export default function NewEntryPage() {
         }
     };
 
-    // Stop camera
-    const stopCamera = useCallback(() => {
+    const stopCamera = () => {
         if (stream) {
             stream.getTracks().forEach((track) => track.stop());
             setStream(null);
         }
-    }, [stream]);
+    };
 
     useEffect(() => {
         startCamera();
@@ -72,7 +71,6 @@ export default function NewEntryPage() {
         };
     }, []);
 
-    // Recording timer
     useEffect(() => {
         let interval;
         if (isRecording) {
@@ -148,7 +146,6 @@ export default function NewEntryPage() {
             ));
             formDataToSend.append("is_private", formData.isPrivate.toString());
 
-            // Simulate upload progress
             const progressInterval = setInterval(() => {
                 setUploadProgress((prev) => Math.min(prev + 10, 90));
             }, 500);
@@ -185,24 +182,33 @@ export default function NewEntryPage() {
     };
 
     return (
-        <div className="max-w-4xl mx-auto">
+        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
             {/* Step Indicator */}
-            <div className="flex items-center justify-center gap-4 mb-8">
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", marginBottom: "2rem" }}>
                 {[1, 2, 3].map((s) => (
-                    <div key={s} className="flex items-center">
-                        <div
-                            className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${step >= s
-                                    ? "gradient-button text-white"
-                                    : "bg-[var(--bg-card)] text-[var(--text-muted)]"
-                                }`}
-                        >
+                    <div key={s} style={{ display: "flex", alignItems: "center" }}>
+                        <div style={{
+                            width: "40px",
+                            height: "40px",
+                            borderRadius: "50%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontWeight: "600",
+                            backgroundColor: step >= s ? "var(--primary)" : "var(--bg-secondary)",
+                            color: step >= s ? "var(--bg-primary)" : "var(--text-muted)"
+                        }}>
                             {s}
                         </div>
                         {s < 3 && (
-                            <div
-                                className={`w-16 h-1 mx-2 rounded ${step > s ? "bg-[var(--primary-purple)]" : "bg-[var(--bg-card)]"
-                                    }`}
-                            />
+                            <div style={{
+                                width: "64px",
+                                height: "4px",
+                                marginLeft: "0.5rem",
+                                marginRight: "0.5rem",
+                                borderRadius: "2px",
+                                backgroundColor: step > s ? "var(--primary)" : "var(--bg-secondary)"
+                            }} />
                         )}
                     </div>
                 ))}
@@ -210,50 +216,66 @@ export default function NewEntryPage() {
 
             {/* Step 1: Recording */}
             {step === 1 && (
-                <div className="glass-card overflow-hidden">
-                    <div className="relative aspect-video bg-black">
+                <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+                    <div style={{ position: "relative", aspectRatio: "16/9", backgroundColor: "#000" }}>
                         <video
                             ref={videoRef}
                             autoPlay
                             muted
                             playsInline
-                            className="w-full h-full object-cover transform scale-x-[-1]"
+                            style={{ width: "100%", height: "100%", objectFit: "cover", transform: "scaleX(-1)" }}
                         />
 
                         {/* Recording indicator */}
                         {isRecording && (
-                            <div className="absolute top-4 left-4 flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
-                                <span className="text-white font-mono">{formatTime(recordingTime)}</span>
+                            <div style={{
+                                position: "absolute",
+                                top: "1rem",
+                                left: "1rem",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.5rem"
+                            }}>
+                                <div style={{
+                                    width: "12px",
+                                    height: "12px",
+                                    borderRadius: "50%",
+                                    backgroundColor: "#EF4444",
+                                    animation: "pulse 1.5s ease-in-out infinite"
+                                }} />
+                                <span style={{ color: "#fff", fontFamily: "monospace" }}>{formatTime(recordingTime)}</span>
                             </div>
                         )}
 
                         {/* Controls */}
-                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4">
+                        <div style={{
+                            position: "absolute",
+                            bottom: "1.5rem",
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "1rem"
+                        }}>
                             <button
                                 onClick={isRecording ? stopRecording : startRecording}
-                                className={`w-20 h-20 rounded-full flex items-center justify-center transition-all ${isRecording
-                                        ? "bg-red-500 animate-pulse-glow"
-                                        : "gradient-button hover:scale-110"
-                                    }`}
+                                className={`record-btn ${isRecording ? "recording" : ""}`}
                             >
                                 {isRecording ? (
-                                    <div className="w-8 h-8 bg-white rounded-sm" />
+                                    <div style={{ width: "32px", height: "32px", backgroundColor: "#fff", borderRadius: "4px" }} />
                                 ) : (
-                                    <div className="w-6 h-6 bg-white rounded-full" />
+                                    <div style={{ width: "24px", height: "24px", backgroundColor: "#fff", borderRadius: "50%" }} />
                                 )}
                             </button>
                         </div>
                     </div>
 
-                    <div className="p-6 text-center">
-                        <h2 className="text-xl font-semibold text-white mb-2">
+                    <div style={{ padding: "1.5rem", textAlign: "center" }}>
+                        <h2 style={{ fontSize: "1.25rem", fontWeight: "600", color: "var(--text-primary)", marginBottom: "0.5rem" }}>
                             {isRecording ? "Kaydediliyor..." : "Günlüğünüzü Kaydedin"}
                         </h2>
-                        <p className="text-[var(--text-secondary)]">
-                            {isRecording
-                                ? "Durdurmak için butona tıklayın"
-                                : "Başlamak için kırmızı butona tıklayın"}
+                        <p style={{ color: "var(--text-secondary)" }}>
+                            {isRecording ? "Durdurmak için butona tıklayın" : "Başlamak için kırmızı butona tıklayın"}
                         </p>
                     </div>
                 </div>
@@ -261,30 +283,25 @@ export default function NewEntryPage() {
 
             {/* Step 2: Review */}
             {step === 2 && recordedBlob && (
-                <div className="glass-card overflow-hidden">
-                    <div className="relative aspect-video bg-black">
+                <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+                    <div style={{ aspectRatio: "16/9", backgroundColor: "#000" }}>
                         <video
+                            ref={previewRef}
                             src={URL.createObjectURL(recordedBlob)}
                             controls
-                            className="w-full h-full object-contain"
+                            style={{ width: "100%", height: "100%", objectFit: "contain" }}
                         />
                     </div>
 
-                    <div className="p-6">
-                        <h2 className="text-xl font-semibold text-white mb-4 text-center">
+                    <div style={{ padding: "1.5rem" }}>
+                        <h2 style={{ fontSize: "1.25rem", fontWeight: "600", color: "var(--text-primary)", textAlign: "center", marginBottom: "1rem" }}>
                             Kaydı İnceleyin
                         </h2>
-                        <div className="flex gap-4 justify-center">
-                            <button
-                                onClick={retakeVideo}
-                                className="px-6 py-3 rounded-xl bg-[var(--bg-dark)] border border-[var(--glass-border)] text-white hover:bg-[var(--bg-card-hover)] transition-colors"
-                            >
+                        <div style={{ display: "flex", gap: "1rem", justifyContent: "center" }}>
+                            <button onClick={retakeVideo} className="btn-secondary">
                                 Tekrar Kaydet
                             </button>
-                            <button
-                                onClick={proceedToDetails}
-                                className="gradient-button px-6 py-3 rounded-xl text-white font-semibold"
-                            >
+                            <button onClick={proceedToDetails} className="btn-primary">
                                 Devam Et
                             </button>
                         </div>
@@ -294,50 +311,54 @@ export default function NewEntryPage() {
 
             {/* Step 3: Details */}
             {step === 3 && (
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                     {/* Video Preview */}
-                    <div className="glass-card overflow-hidden">
-                        <div className="aspect-video bg-black">
+                    <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+                        <div style={{ aspectRatio: "16/9", backgroundColor: "#000" }}>
                             <video
                                 src={recordedBlob ? URL.createObjectURL(recordedBlob) : ""}
                                 controls
-                                className="w-full h-full object-contain"
+                                style={{ width: "100%", height: "100%", objectFit: "contain" }}
                             />
                         </div>
                     </div>
 
                     {/* Mood Selection */}
-                    <div className="glass-card p-6">
-                        <h3 className="text-lg font-semibold text-white mb-4">
+                    <div className="card">
+                        <h3 style={{ fontSize: "1.125rem", fontWeight: "600", color: "var(--text-primary)", marginBottom: "1rem" }}>
                             Bugün nasıl hissediyorsunuz?
                         </h3>
-                        <div className="grid grid-cols-5 gap-3">
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.75rem" }}>
                             {moods.map((mood) => (
                                 <button
                                     key={mood.value}
                                     type="button"
                                     onClick={() => setFormData({ ...formData, mood: mood.value })}
-                                    className={`p-4 rounded-xl flex flex-col items-center gap-2 transition-all ${formData.mood === mood.value
-                                            ? "ring-2 ring-white scale-105"
-                                            : "hover:scale-105"
-                                        }`}
                                     style={{
-                                        backgroundColor:
-                                            formData.mood === mood.value
-                                                ? mood.color
-                                                : "var(--bg-dark)",
+                                        padding: "1rem",
+                                        borderRadius: "0.75rem",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        gap: "0.5rem",
+                                        border: formData.mood === mood.value ? "2px solid var(--primary)" : "1px solid var(--border-color)",
+                                        backgroundColor: formData.mood === mood.value ? mood.color : "var(--bg-secondary)",
+                                        cursor: "pointer",
+                                        transition: "all 0.2s ease"
                                     }}
                                 >
-                                    <span className="text-2xl">{mood.emoji}</span>
-                                    <span className="text-xs text-white">{mood.label}</span>
+                                    <span style={{ fontSize: "1.5rem" }}>{mood.emoji}</span>
+                                    <span style={{ fontSize: "0.75rem", color: formData.mood === mood.value ? "#fff" : "var(--text-secondary)" }}>
+                                        {mood.label}
+                                    </span>
                                 </button>
                             ))}
                         </div>
 
                         {/* Mood Intensity */}
                         {formData.mood && (
-                            <div className="mt-6">
-                                <label className="block text-sm text-[var(--text-secondary)] mb-2">
+                            <div style={{ marginTop: "1.5rem" }}>
+                                <label style={{ display: "block", fontSize: "0.875rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>
                                     Yoğunluk: {formData.moodIntensity}/10
                                 </label>
                                 <input
@@ -345,116 +366,79 @@ export default function NewEntryPage() {
                                     min="1"
                                     max="10"
                                     value={formData.moodIntensity}
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            moodIntensity: parseInt(e.target.value),
-                                        })
-                                    }
-                                    className="w-full"
+                                    onChange={(e) => setFormData({ ...formData, moodIntensity: parseInt(e.target.value) })}
+                                    style={{ width: "100%" }}
                                 />
                             </div>
                         )}
                     </div>
 
                     {/* Details */}
-                    <div className="glass-card p-6 space-y-4">
+                    <div className="card" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                         <div>
-                            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                            <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "500", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>
                                 Başlık (opsiyonel)
                             </label>
                             <input
                                 type="text"
                                 value={formData.title}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, title: e.target.value })
-                                }
-                                className="w-full px-4 py-3 rounded-lg bg-[var(--bg-dark)] border border-[var(--glass-border)] text-white placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--primary-purple)]"
+                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                className="input"
                                 placeholder="Bugün neler oldu?"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                            <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "500", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>
                                 Not (opsiyonel)
                             </label>
                             <textarea
                                 value={formData.note}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, note: e.target.value })
-                                }
+                                onChange={(e) => setFormData({ ...formData, note: e.target.value })}
                                 rows={3}
-                                className="w-full px-4 py-3 rounded-lg bg-[var(--bg-dark)] border border-[var(--glass-border)] text-white placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--primary-purple)] resize-none"
+                                className="input"
+                                style={{ resize: "none" }}
                                 placeholder="Eklemek istediğiniz notlar..."
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                            <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "500", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>
                                 Etiketler (virgülle ayırın)
                             </label>
                             <input
                                 type="text"
                                 value={formData.tags}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, tags: e.target.value })
-                                }
-                                className="w-full px-4 py-3 rounded-lg bg-[var(--bg-dark)] border border-[var(--glass-border)] text-white placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--primary-purple)]"
+                                onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                                className="input"
                                 placeholder="iş, aile, seyahat..."
                             />
                         </div>
 
-                        <label className="flex items-center gap-3 cursor-pointer">
+                        <label style={{ display: "flex", alignItems: "center", gap: "0.75rem", cursor: "pointer" }}>
                             <input
                                 type="checkbox"
                                 checked={formData.isPrivate}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, isPrivate: e.target.checked })
-                                }
-                                className="w-5 h-5 rounded border-[var(--glass-border)] bg-[var(--bg-dark)]"
+                                onChange={(e) => setFormData({ ...formData, isPrivate: e.target.checked })}
                             />
-                            <span className="text-[var(--text-secondary)]">
-                                Bu kaydı gizli tut
-                            </span>
+                            <span style={{ color: "var(--text-secondary)" }}>Bu kaydı gizli tut</span>
                         </label>
                     </div>
 
                     {/* Submit */}
-                    <div className="flex gap-4">
-                        <button
-                            type="button"
-                            onClick={() => setStep(2)}
-                            className="flex-1 px-6 py-4 rounded-xl bg-[var(--bg-card)] border border-[var(--glass-border)] text-white hover:bg-[var(--bg-card-hover)] transition-colors"
-                        >
+                    <div style={{ display: "flex", gap: "1rem" }}>
+                        <button type="button" onClick={() => setStep(2)} className="btn-secondary" style={{ flex: 1 }}>
                             Geri
                         </button>
                         <button
                             type="submit"
                             disabled={isUploading}
-                            className="flex-1 gradient-button px-6 py-4 rounded-xl text-white font-semibold disabled:opacity-50"
+                            className="btn-primary"
+                            style={{ flex: 1, opacity: isUploading ? 0.5 : 1 }}
                         >
                             {isUploading ? (
-                                <span className="flex items-center justify-center gap-2">
-                                    <svg
-                                        className="animate-spin h-5 w-5"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <circle
-                                            className="opacity-25"
-                                            cx="12"
-                                            cy="12"
-                                            r="10"
-                                            stroke="currentColor"
-                                            strokeWidth="4"
-                                        ></circle>
-                                        <path
-                                            className="opacity-75"
-                                            fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                        ></path>
-                                    </svg>
+                                <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+                                    <div className="spinner" style={{ width: "20px", height: "20px" }}></div>
                                     Yükleniyor... {uploadProgress}%
                                 </span>
                             ) : (

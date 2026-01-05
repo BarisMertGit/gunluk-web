@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -46,78 +47,142 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[var(--bg-dark)] flex items-center justify-center px-4">
-            <div className="w-full max-w-md">
+        <div style={{
+            minHeight: "100vh",
+            backgroundColor: "var(--bg-primary)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1rem"
+        }}>
+            <div style={{ width: "100%", maxWidth: "400px" }}>
+                {/* Theme Toggle */}
+                <div style={{ position: "fixed", top: "1rem", right: "1rem" }}>
+                    <ThemeToggle />
+                </div>
+
                 {/* Logo */}
-                <Link href="/" className="flex items-center justify-center gap-2 mb-8">
-                    <div className="w-12 h-12 rounded-full gradient-button flex items-center justify-center">
-                        <span className="text-2xl">📔</span>
+                <Link href="/" style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.5rem",
+                    marginBottom: "2rem",
+                    textDecoration: "none"
+                }}>
+                    <div style={{
+                        width: "48px",
+                        height: "48px",
+                        borderRadius: "50%",
+                        backgroundColor: "var(--primary)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "1.5rem"
+                    }}>
+                        📔
                     </div>
-                    <span className="text-2xl font-bold text-white">Yaşam Günlüğü</span>
+                    <span style={{ fontSize: "1.5rem", fontWeight: "bold", color: "var(--text-primary)" }}>
+                        Yaşam Günlüğü
+                    </span>
                 </Link>
 
                 {/* Login Card */}
-                <div className="glass-card p-8">
-                    <h1 className="text-2xl font-bold text-white text-center mb-2">
+                <div className="card">
+                    <h1 style={{
+                        fontSize: "1.5rem",
+                        fontWeight: "bold",
+                        color: "var(--text-primary)",
+                        textAlign: "center",
+                        marginBottom: "0.5rem"
+                    }}>
                         Tekrar Hoş Geldiniz
                     </h1>
-                    <p className="text-[var(--text-secondary)] text-center mb-8">
+                    <p style={{
+                        color: "var(--text-secondary)",
+                        textAlign: "center",
+                        marginBottom: "2rem"
+                    }}>
                         Hesabınıza giriş yapın
                     </p>
 
                     {error && (
-                        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-6 text-red-400 text-sm">
+                        <div style={{
+                            backgroundColor: "rgba(239, 68, 68, 0.1)",
+                            border: "1px solid rgba(239, 68, 68, 0.2)",
+                            borderRadius: "0.5rem",
+                            padding: "1rem",
+                            marginBottom: "1.5rem",
+                            color: "#EF4444",
+                            fontSize: "0.875rem"
+                        }}>
                             {error}
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div>
-                            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                    <form onSubmit={handleSubmit}>
+                        <div style={{ marginBottom: "1.25rem" }}>
+                            <label style={{
+                                display: "block",
+                                fontSize: "0.875rem",
+                                fontWeight: "500",
+                                color: "var(--text-secondary)",
+                                marginBottom: "0.5rem"
+                            }}>
                                 E-posta Adresi
                             </label>
                             <input
                                 type="email"
                                 required
                                 value={formData.email}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, email: e.target.value })
-                                }
-                                className="w-full px-4 py-3 rounded-lg bg-[var(--bg-dark)] border border-[var(--glass-border)] text-white placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--primary-purple)] transition-colors"
+                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                className="input"
                                 placeholder="ornek@email.com"
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                        <div style={{ marginBottom: "1.25rem" }}>
+                            <label style={{
+                                display: "block",
+                                fontSize: "0.875rem",
+                                fontWeight: "500",
+                                color: "var(--text-secondary)",
+                                marginBottom: "0.5rem"
+                            }}>
                                 Şifre
                             </label>
                             <input
                                 type="password"
                                 required
                                 value={formData.password}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, password: e.target.value })
-                                }
-                                className="w-full px-4 py-3 rounded-lg bg-[var(--bg-dark)] border border-[var(--glass-border)] text-white placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--primary-purple)] transition-colors"
+                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                className="input"
                                 placeholder="••••••••"
                             />
                         </div>
 
-                        <div className="flex items-center justify-between">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    className="w-4 h-4 rounded border-[var(--glass-border)] bg-[var(--bg-dark)] checked:bg-[var(--primary-purple)]"
-                                />
-                                <span className="text-sm text-[var(--text-secondary)]">
-                                    Beni hatırla
-                                </span>
+                        <div style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            marginBottom: "1.5rem"
+                        }}>
+                            <label style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.5rem",
+                                cursor: "pointer",
+                                color: "var(--text-secondary)",
+                                fontSize: "0.875rem"
+                            }}>
+                                <input type="checkbox" />
+                                Beni hatırla
                             </label>
-                            <Link
-                                href="/forgot-password"
-                                className="text-sm text-[var(--primary-purple)] hover:underline"
-                            >
+                            <Link href="/forgot-password" style={{
+                                color: "var(--text-secondary)",
+                                fontSize: "0.875rem",
+                                textDecoration: "none"
+                            }}>
                                 Şifremi unuttum
                             </Link>
                         </div>
@@ -125,30 +190,12 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full gradient-button py-3 rounded-lg text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="btn-primary"
+                            style={{ width: "100%", opacity: isLoading ? 0.5 : 1 }}
                         >
                             {isLoading ? (
-                                <span className="flex items-center justify-center gap-2">
-                                    <svg
-                                        className="animate-spin h-5 w-5"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <circle
-                                            className="opacity-25"
-                                            cx="12"
-                                            cy="12"
-                                            r="10"
-                                            stroke="currentColor"
-                                            strokeWidth="4"
-                                        ></circle>
-                                        <path
-                                            className="opacity-75"
-                                            fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                        ></path>
-                                    </svg>
+                                <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+                                    <div className="spinner" style={{ width: "20px", height: "20px" }}></div>
                                     Giriş yapılıyor...
                                 </span>
                             ) : (
@@ -157,12 +204,9 @@ export default function LoginPage() {
                         </button>
                     </form>
 
-                    <div className="mt-6 text-center">
-                        <span className="text-[var(--text-secondary)]">Hesabınız yok mu? </span>
-                        <Link
-                            href="/register"
-                            className="text-[var(--primary-purple)] hover:underline font-medium"
-                        >
+                    <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
+                        <span style={{ color: "var(--text-secondary)" }}>Hesabınız yok mu? </span>
+                        <Link href="/register" style={{ color: "var(--text-primary)", fontWeight: "500" }}>
                             Kayıt olun
                         </Link>
                     </div>

@@ -75,7 +75,6 @@ export default function FeedPage() {
         fetchEntries(1, true);
     }, [filter, fetchEntries]);
 
-    // Infinite scroll observer
     const lastEntryRef = useCallback(
         (node) => {
             if (isLoading) return;
@@ -133,29 +132,36 @@ export default function FeedPage() {
     };
 
     return (
-        <div className="max-w-4xl mx-auto">
+        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            <div style={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "1rem",
+                marginBottom: "2rem"
+            }}>
                 <div>
-                    <h1 className="text-3xl font-bold text-white">Günlüklerim</h1>
-                    <p className="text-[var(--text-secondary)]">
+                    <h1 style={{ fontSize: "1.875rem", fontWeight: "bold", color: "var(--text-primary)", marginBottom: "0.25rem" }}>
+                        Günlüklerim
+                    </h1>
+                    <p style={{ color: "var(--text-secondary)" }}>
                         Tüm anılarınız tek bir yerde
                     </p>
                 </div>
-                <Link
-                    href="/new"
-                    className="gradient-button px-6 py-3 rounded-xl text-white font-semibold inline-flex items-center justify-center gap-2"
-                >
+                <Link href="/new" className="btn-primary">
                     <span>🎥</span> Yeni Kayıt
                 </Link>
             </div>
 
             {/* Filters */}
-            <div className="flex flex-wrap gap-3 mb-6">
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", marginBottom: "1.5rem" }}>
                 <select
                     value={filter.mood}
                     onChange={(e) => setFilter({ ...filter, mood: e.target.value })}
-                    className="px-4 py-2 rounded-lg bg-[var(--bg-card)] border border-[var(--glass-border)] text-white focus:outline-none focus:border-[var(--primary-purple)]"
+                    className="input"
+                    style={{ width: "auto", minWidth: "150px" }}
                 >
                     <option value="">Tüm Duygular</option>
                     {Object.entries(moodEmojis).map(([mood, emoji]) => (
@@ -166,13 +172,8 @@ export default function FeedPage() {
                 </select>
 
                 <button
-                    onClick={() =>
-                        setFilter({ ...filter, favoritesOnly: !filter.favoritesOnly })
-                    }
-                    className={`px-4 py-2 rounded-lg border transition-colors inline-flex items-center gap-2 ${filter.favoritesOnly
-                            ? "bg-[var(--primary-purple)] border-[var(--primary-purple)] text-white"
-                            : "bg-[var(--bg-card)] border-[var(--glass-border)] text-[var(--text-secondary)] hover:text-white"
-                        }`}
+                    onClick={() => setFilter({ ...filter, favoritesOnly: !filter.favoritesOnly })}
+                    className={filter.favoritesOnly ? "btn-primary" : "btn-secondary"}
                 >
                     <span>⭐</span> Favoriler
                 </button>
@@ -180,147 +181,155 @@ export default function FeedPage() {
 
             {/* Entries List */}
             {isLoading && entries.length === 0 ? (
-                <div className="flex justify-center py-12">
-                    <div className="animate-spin h-8 w-8 border-4 border-[var(--primary-purple)] border-t-transparent rounded-full"></div>
+                <div style={{ display: "flex", justifyContent: "center", padding: "3rem 0" }}>
+                    <div className="spinner"></div>
                 </div>
             ) : entries.length === 0 ? (
-                <div className="glass-card p-12 text-center">
-                    <div className="text-6xl mb-4">📔</div>
-                    <h2 className="text-xl font-semibold text-white mb-2">
+                <div className="card" style={{ textAlign: "center", padding: "3rem" }}>
+                    <div style={{ fontSize: "4rem", marginBottom: "1rem" }}>📔</div>
+                    <h2 style={{ fontSize: "1.25rem", fontWeight: "600", color: "var(--text-primary)", marginBottom: "0.5rem" }}>
                         Henüz günlük kaydınız yok
                     </h2>
-                    <p className="text-[var(--text-secondary)] mb-6">
+                    <p style={{ color: "var(--text-secondary)", marginBottom: "1.5rem" }}>
                         Hayatınızın hikayesini kaydetmeye başlayın
                     </p>
-                    <Link
-                        href="/new"
-                        className="gradient-button px-6 py-3 rounded-xl text-white font-semibold inline-flex items-center gap-2"
-                    >
+                    <Link href="/new" className="btn-primary">
                         <span>🎥</span> İlk Kaydınızı Oluşturun
                     </Link>
                 </div>
             ) : (
-                <div className="space-y-4">
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                     {entries.map((entry, index) => (
                         <div
                             key={entry.id}
                             ref={index === entries.length - 1 ? lastEntryRef : null}
-                            className="glass-card overflow-hidden hover:border-[var(--primary-purple)] transition-all group"
+                            className="entry-card"
                         >
-                            <div className="flex flex-col sm:flex-row">
-                                {/* Thumbnail */}
-                                <div className="relative sm:w-48 aspect-video sm:aspect-square bg-[var(--bg-dark)] flex-shrink-0">
-                                    {entry.thumbnail_url ? (
-                                        <img
-                                            src={entry.thumbnail_url}
-                                            alt={entry.title || "Video thumbnail"}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-4xl">
-                                            🎥
-                                        </div>
-                                    )}
-                                    {entry.duration_seconds && (
-                                        <div className="absolute bottom-2 right-2 px-2 py-1 rounded bg-black/70 text-white text-xs">
-                                            {formatDuration(entry.duration_seconds)}
-                                        </div>
-                                    )}
-                                    {/* Hover play overlay */}
-                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                        <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                                            <svg
-                                                className="w-6 h-6 text-white ml-1"
-                                                fill="currentColor"
-                                                viewBox="0 0 20 20"
+                            {/* Thumbnail */}
+                            <div className="entry-thumbnail">
+                                {entry.thumbnail_url ? (
+                                    <img
+                                        src={entry.thumbnail_url}
+                                        alt={entry.title || "Video thumbnail"}
+                                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                    />
+                                ) : (
+                                    <div style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        fontSize: "2.5rem"
+                                    }}>
+                                        🎥
+                                    </div>
+                                )}
+                                {entry.duration_seconds && (
+                                    <div style={{
+                                        position: "absolute",
+                                        bottom: "0.5rem",
+                                        right: "0.5rem",
+                                        padding: "0.25rem 0.5rem",
+                                        borderRadius: "0.25rem",
+                                        backgroundColor: "rgba(0, 0, 0, 0.7)",
+                                        color: "#fff",
+                                        fontSize: "0.75rem"
+                                    }}>
+                                        {formatDuration(entry.duration_seconds)}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Content */}
+                            <div style={{ flex: 1, padding: "1rem" }}>
+                                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "0.5rem", marginBottom: "0.5rem" }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                        {entry.mood && (
+                                            <span
+                                                className="mood-badge"
+                                                style={{ backgroundColor: moodColors[entry.mood] }}
                                             >
-                                                <path
-                                                    fillRule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                                                    clipRule="evenodd"
-                                                />
-                                            </svg>
+                                                {moodEmojis[entry.mood]}
+                                            </span>
+                                        )}
+                                        <div>
+                                            <h3 style={{ fontWeight: "600", color: "var(--text-primary)", marginBottom: "0.125rem" }}>
+                                                {entry.title || formatDate(entry.recorded_at)}
+                                            </h3>
+                                            <p style={{ fontSize: "0.875rem", color: "var(--text-muted)" }}>
+                                                {formatDate(entry.recorded_at)}
+                                            </p>
                                         </div>
                                     </div>
+                                    <button
+                                        onClick={() => toggleFavorite(entry.id)}
+                                        style={{
+                                            background: "none",
+                                            border: "none",
+                                            cursor: "pointer",
+                                            fontSize: "1.25rem",
+                                            padding: "0.25rem"
+                                        }}
+                                    >
+                                        {entry.is_favorite ? "⭐" : "☆"}
+                                    </button>
                                 </div>
 
-                                {/* Content */}
-                                <div className="flex-1 p-4">
-                                    <div className="flex items-start justify-between gap-2 mb-2">
-                                        <div className="flex items-center gap-2">
-                                            {entry.mood && (
-                                                <span
-                                                    className="w-8 h-8 rounded-full flex items-center justify-center text-lg"
-                                                    style={{ backgroundColor: moodColors[entry.mood] }}
-                                                >
-                                                    {moodEmojis[entry.mood]}
-                                                </span>
-                                            )}
-                                            <div>
-                                                <h3 className="text-white font-semibold">
-                                                    {entry.title || formatDate(entry.recorded_at)}
-                                                </h3>
-                                                <p className="text-[var(--text-muted)] text-sm">
-                                                    {formatDate(entry.recorded_at)}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <button
-                                            onClick={() => toggleFavorite(entry.id)}
-                                            className={`p-2 rounded-lg transition-colors ${entry.is_favorite
-                                                    ? "text-yellow-400"
-                                                    : "text-[var(--text-muted)] hover:text-yellow-400"
-                                                }`}
-                                        >
-                                            {entry.is_favorite ? "⭐" : "☆"}
-                                        </button>
+                                {/* Summary or Note */}
+                                {(entry.summary || entry.note) && (
+                                    <p style={{
+                                        color: "var(--text-secondary)",
+                                        fontSize: "0.875rem",
+                                        marginBottom: "0.75rem",
+                                        display: "-webkit-box",
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: "vertical",
+                                        overflow: "hidden"
+                                    }}>
+                                        {entry.summary || entry.note}
+                                    </p>
+                                )}
+
+                                {/* Tags */}
+                                {(entry.auto_tags?.length > 0 || entry.manual_tags?.length > 0) && (
+                                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                                        {[...(entry.auto_tags || []), ...(entry.manual_tags || [])]
+                                            .slice(0, 4)
+                                            .map((tag, i) => (
+                                                <span key={i} className="tag">#{tag}</span>
+                                            ))}
                                     </div>
+                                )}
 
-                                    {/* Summary or Note */}
-                                    {(entry.summary || entry.note) && (
-                                        <p className="text-[var(--text-secondary)] text-sm mb-3 line-clamp-2">
-                                            {entry.summary || entry.note}
-                                        </p>
-                                    )}
-
-                                    {/* Tags */}
-                                    {(entry.auto_tags?.length > 0 || entry.manual_tags?.length > 0) && (
-                                        <div className="flex flex-wrap gap-2">
-                                            {[...(entry.auto_tags || []), ...(entry.manual_tags || [])]
-                                                .slice(0, 4)
-                                                .map((tag, i) => (
-                                                    <span
-                                                        key={i}
-                                                        className="px-2 py-1 rounded-full bg-[var(--bg-dark)] text-xs text-[var(--text-secondary)]"
-                                                    >
-                                                        #{tag}
-                                                    </span>
-                                                ))}
-                                        </div>
-                                    )}
-
-                                    {/* Processing status */}
-                                    {!entry.is_processed && (
-                                        <div className="mt-3 flex items-center gap-2 text-yellow-400 text-sm">
-                                            <div className="animate-spin h-4 w-4 border-2 border-yellow-400 border-t-transparent rounded-full"></div>
-                                            AI ile işleniyor...
-                                        </div>
-                                    )}
-                                </div>
+                                {/* Processing status */}
+                                {!entry.is_processed && (
+                                    <div style={{
+                                        marginTop: "0.75rem",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "0.5rem",
+                                        color: "#EAB308",
+                                        fontSize: "0.875rem"
+                                    }}>
+                                        <div className="spinner" style={{ width: "16px", height: "16px", borderColor: "#EAB308", borderTopColor: "transparent" }}></div>
+                                        AI ile işleniyor...
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))}
 
                     {/* Loading more */}
                     {isLoading && entries.length > 0 && (
-                        <div className="flex justify-center py-4">
-                            <div className="animate-spin h-6 w-6 border-4 border-[var(--primary-purple)] border-t-transparent rounded-full"></div>
+                        <div style={{ display: "flex", justifyContent: "center", padding: "1rem 0" }}>
+                            <div className="spinner"></div>
                         </div>
                     )}
 
                     {/* End of list */}
                     {!hasMore && entries.length > 0 && (
-                        <div className="text-center py-8 text-[var(--text-muted)]">
+                        <div style={{ textAlign: "center", padding: "2rem 0", color: "var(--text-muted)" }}>
                             Tüm günlükleriniz bu kadar 📔
                         </div>
                     )}

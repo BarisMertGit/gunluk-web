@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -63,50 +64,108 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[var(--bg-dark)] flex items-center justify-center px-4 py-12">
-            <div className="w-full max-w-md">
+        <div style={{
+            minHeight: "100vh",
+            backgroundColor: "var(--bg-primary)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "2rem 1rem"
+        }}>
+            <div style={{ width: "100%", maxWidth: "400px" }}>
+                {/* Theme Toggle */}
+                <div style={{ position: "fixed", top: "1rem", right: "1rem" }}>
+                    <ThemeToggle />
+                </div>
+
                 {/* Logo */}
-                <Link href="/" className="flex items-center justify-center gap-2 mb-8">
-                    <div className="w-12 h-12 rounded-full gradient-button flex items-center justify-center">
-                        <span className="text-2xl">📔</span>
+                <Link href="/" style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.5rem",
+                    marginBottom: "2rem",
+                    textDecoration: "none"
+                }}>
+                    <div style={{
+                        width: "48px",
+                        height: "48px",
+                        borderRadius: "50%",
+                        backgroundColor: "var(--primary)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "1.5rem"
+                    }}>
+                        📔
                     </div>
-                    <span className="text-2xl font-bold text-white">Yaşam Günlüğü</span>
+                    <span style={{ fontSize: "1.5rem", fontWeight: "bold", color: "var(--text-primary)" }}>
+                        Yaşam Günlüğü
+                    </span>
                 </Link>
 
                 {/* Register Card */}
-                <div className="glass-card p-8">
-                    <h1 className="text-2xl font-bold text-white text-center mb-2">
+                <div className="card">
+                    <h1 style={{
+                        fontSize: "1.5rem",
+                        fontWeight: "bold",
+                        color: "var(--text-primary)",
+                        textAlign: "center",
+                        marginBottom: "0.5rem"
+                    }}>
                         Hesap Oluşturun
                     </h1>
-                    <p className="text-[var(--text-secondary)] text-center mb-8">
+                    <p style={{
+                        color: "var(--text-secondary)",
+                        textAlign: "center",
+                        marginBottom: "2rem"
+                    }}>
                         Hikayenizi kaydetmeye başlayın
                     </p>
 
                     {error && (
-                        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-6 text-red-400 text-sm">
+                        <div style={{
+                            backgroundColor: "rgba(239, 68, 68, 0.1)",
+                            border: "1px solid rgba(239, 68, 68, 0.2)",
+                            borderRadius: "0.5rem",
+                            padding: "1rem",
+                            marginBottom: "1.5rem",
+                            color: "#EF4444",
+                            fontSize: "0.875rem"
+                        }}>
                             {error}
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <div>
-                            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                    <form onSubmit={handleSubmit}>
+                        <div style={{ marginBottom: "1rem" }}>
+                            <label style={{
+                                display: "block",
+                                fontSize: "0.875rem",
+                                fontWeight: "500",
+                                color: "var(--text-secondary)",
+                                marginBottom: "0.5rem"
+                            }}>
                                 Ad Soyad
                             </label>
                             <input
                                 type="text"
                                 required
                                 value={formData.fullName}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, fullName: e.target.value })
-                                }
-                                className="w-full px-4 py-3 rounded-lg bg-[var(--bg-dark)] border border-[var(--glass-border)] text-white placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--primary-purple)] transition-colors"
+                                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                                className="input"
                                 placeholder="Adınız Soyadınız"
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                        <div style={{ marginBottom: "1rem" }}>
+                            <label style={{
+                                display: "block",
+                                fontSize: "0.875rem",
+                                fontWeight: "500",
+                                color: "var(--text-secondary)",
+                                marginBottom: "0.5rem"
+                            }}>
                                 Kullanıcı Adı
                             </label>
                             <input
@@ -114,32 +173,40 @@ export default function RegisterPage() {
                                 required
                                 minLength={3}
                                 value={formData.username}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, username: e.target.value })
-                                }
-                                className="w-full px-4 py-3 rounded-lg bg-[var(--bg-dark)] border border-[var(--glass-border)] text-white placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--primary-purple)] transition-colors"
+                                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                                className="input"
                                 placeholder="kullanici_adi"
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                        <div style={{ marginBottom: "1rem" }}>
+                            <label style={{
+                                display: "block",
+                                fontSize: "0.875rem",
+                                fontWeight: "500",
+                                color: "var(--text-secondary)",
+                                marginBottom: "0.5rem"
+                            }}>
                                 E-posta Adresi
                             </label>
                             <input
                                 type="email"
                                 required
                                 value={formData.email}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, email: e.target.value })
-                                }
-                                className="w-full px-4 py-3 rounded-lg bg-[var(--bg-dark)] border border-[var(--glass-border)] text-white placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--primary-purple)] transition-colors"
+                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                className="input"
                                 placeholder="ornek@email.com"
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                        <div style={{ marginBottom: "1rem" }}>
+                            <label style={{
+                                display: "block",
+                                fontSize: "0.875rem",
+                                fontWeight: "500",
+                                color: "var(--text-secondary)",
+                                marginBottom: "0.5rem"
+                            }}>
                                 Şifre
                             </label>
                             <input
@@ -147,75 +214,59 @@ export default function RegisterPage() {
                                 required
                                 minLength={8}
                                 value={formData.password}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, password: e.target.value })
-                                }
-                                className="w-full px-4 py-3 rounded-lg bg-[var(--bg-dark)] border border-[var(--glass-border)] text-white placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--primary-purple)] transition-colors"
+                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                className="input"
                                 placeholder="En az 8 karakter"
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                        <div style={{ marginBottom: "1.5rem" }}>
+                            <label style={{
+                                display: "block",
+                                fontSize: "0.875rem",
+                                fontWeight: "500",
+                                color: "var(--text-secondary)",
+                                marginBottom: "0.5rem"
+                            }}>
                                 Şifre Tekrar
                             </label>
                             <input
                                 type="password"
                                 required
                                 value={formData.confirmPassword}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, confirmPassword: e.target.value })
-                                }
-                                className="w-full px-4 py-3 rounded-lg bg-[var(--bg-dark)] border border-[var(--glass-border)] text-white placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--primary-purple)] transition-colors"
+                                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                                className="input"
                                 placeholder="Şifrenizi tekrar girin"
                             />
                         </div>
 
-                        <label className="flex items-start gap-2 cursor-pointer">
-                            <input
-                                type="checkbox"
-                                required
-                                className="w-4 h-4 mt-1 rounded border-[var(--glass-border)] bg-[var(--bg-dark)] checked:bg-[var(--primary-purple)]"
-                            />
-                            <span className="text-sm text-[var(--text-secondary)]">
-                                <Link href="/terms" className="text-[var(--primary-purple)] hover:underline">
-                                    Kullanım koşullarını
-                                </Link>{" "}
-                                ve{" "}
-                                <Link href="/privacy" className="text-[var(--primary-purple)] hover:underline">
-                                    gizlilik politikasını
-                                </Link>{" "}
-                                kabul ediyorum.
+                        <label style={{
+                            display: "flex",
+                            alignItems: "flex-start",
+                            gap: "0.5rem",
+                            cursor: "pointer",
+                            marginBottom: "1.5rem",
+                            fontSize: "0.875rem",
+                            color: "var(--text-secondary)"
+                        }}>
+                            <input type="checkbox" required style={{ marginTop: "0.25rem" }} />
+                            <span>
+                                <Link href="/terms" style={{ color: "var(--text-primary)" }}>Kullanım koşullarını</Link>
+                                {" "}ve{" "}
+                                <Link href="/privacy" style={{ color: "var(--text-primary)" }}>gizlilik politikasını</Link>
+                                {" "}kabul ediyorum.
                             </span>
                         </label>
 
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full gradient-button py-3 rounded-lg text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="btn-primary"
+                            style={{ width: "100%", opacity: isLoading ? 0.5 : 1 }}
                         >
                             {isLoading ? (
-                                <span className="flex items-center justify-center gap-2">
-                                    <svg
-                                        className="animate-spin h-5 w-5"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <circle
-                                            className="opacity-25"
-                                            cx="12"
-                                            cy="12"
-                                            r="10"
-                                            stroke="currentColor"
-                                            strokeWidth="4"
-                                        ></circle>
-                                        <path
-                                            className="opacity-75"
-                                            fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                        ></path>
-                                    </svg>
+                                <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>
+                                    <div className="spinner" style={{ width: "20px", height: "20px" }}></div>
                                     Kayıt yapılıyor...
                                 </span>
                             ) : (
@@ -224,12 +275,9 @@ export default function RegisterPage() {
                         </button>
                     </form>
 
-                    <div className="mt-6 text-center">
-                        <span className="text-[var(--text-secondary)]">Zaten hesabınız var mı? </span>
-                        <Link
-                            href="/login"
-                            className="text-[var(--primary-purple)] hover:underline font-medium"
-                        >
+                    <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
+                        <span style={{ color: "var(--text-secondary)" }}>Zaten hesabınız var mı? </span>
+                        <Link href="/login" style={{ color: "var(--text-primary)", fontWeight: "500" }}>
                             Giriş yapın
                         </Link>
                     </div>
