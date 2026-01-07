@@ -48,7 +48,7 @@ export default function FeedPage() {
             if (filter.favoritesOnly) params.append("favorites_only", "true");
 
             const response = await fetch(
-                `http://localhost:8000/api/entries?${params}`,
+                `http://localhost:8000/api/entries/?${params}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
